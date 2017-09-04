@@ -1,6 +1,7 @@
 ﻿using LibraryProject.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,8 @@ namespace LibraryProject.Extention_Classes
     {
         private static string writePath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/newspapers.txt";
         private static string writeXmlPath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/newspapers.xml";
-        private static string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=Library;Integrated Security=True";
+        //private static string connectionString = @"Data Source=DESKTOP-4IAPGK2;Initial Catalog=Library;Integrated Security=True";//@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=Library;Integrated Security=True";
+        private static string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
         public static void GetTxtList(this List<NewsPaper> list)
         {
@@ -45,24 +47,29 @@ namespace LibraryProject.Extention_Classes
 
         public static void SetNewspaperListToDb(this List<NewsPaper> magazineList)
         {
-            string sqlExpression = "INSERT INTO Newspapers ([Id], [Name], [Category], [Publisher],[Price]) VALUES";
+            
+            StringBuilder insertSqlExpression = new StringBuilder(300);
+            insertSqlExpression.Append("INSERT INTO Newspapers ([Id], [Name], [Category], [Publisher],[Price]) VALUES");
 
             foreach (NewsPaper item in magazineList)
             {
                 if (item == magazineList.Last())
                 {
-                    sqlExpression += $"('{item.Id}','{item.Name}','{item.Category}','{item.Publisher}','{item.Price}');";
+                    insertSqlExpression.Append($"('{item.Id}','{item.Name}','{item.Category}','{item.Publisher}','{item.Price}');");
                 }
                 else
                 {
-                    sqlExpression += $"('{item.Id}','{item.Name}','{item.Category}','{item.Publisher}','{item.Price}'),";
+                    insertSqlExpression.Append($"('{item.Id}','{item.Name}','{item.Category}','{item.Publisher}','{item.Price}'),");
                 }
             }
+
+            string InsertSqlExpression = insertSqlExpression.ToString();
+            string DeleteSqlExpression = "DELETE FROM Newspapers";
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
 
-                SqlCommand command = new SqlCommand("DELETE FROM Newspapers", con);
+                SqlCommand command = new SqlCommand(DeleteSqlExpression, con);
                 try
                 {
                     con.Open();
@@ -72,7 +79,7 @@ namespace LibraryProject.Extention_Classes
                 {
                 }
 
-                command = new SqlCommand(sqlExpression, con);
+                command = new SqlCommand(InsertSqlExpression, con);
                 try
                 {
                     command.ExecuteNonQuery();

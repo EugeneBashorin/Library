@@ -2,6 +2,10 @@
     alert("Get your list from: ~/visual studio 2015/Projects/LibraryProject/LibraryProject/App_Data/booksList.txt")
 });
 
+$(".db-saver").click(function () {
+    alert("Saved to Data Base")
+});
+
 $(document).ready(function () {
 
     $.ajaxSetup({ cache: false });

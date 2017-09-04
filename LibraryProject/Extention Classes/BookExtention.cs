@@ -1,6 +1,7 @@
 ﻿using LibraryProject.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -13,8 +14,8 @@ namespace LibraryProject.Extention_Classes
     {
         private static string writePath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/books.txt";
         private static string writeXmlPath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/books.xml";
-        private static string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=Library;Integrated Security=True";
-
+        //private static string connectionString = @"Data Source=DESKTOP-4IAPGK2;Initial Catalog=Library;Integrated Security=True";//@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=Library;Integrated Security=True";
+        private static string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
         public static void GetTxtList(this List<Book> list)
         {
             StringBuilder result = new StringBuilder(130);
@@ -45,24 +46,28 @@ namespace LibraryProject.Extention_Classes
 
         public static void SetBookListToDb(this List<Book> bookList)
         {
-            string sqlExpression = "INSERT INTO Books ([Id], [Name], [Author], [Publisher],[Price]) VALUES";
+            StringBuilder insertSqlExpression = new StringBuilder(300);
+            insertSqlExpression.Append("INSERT INTO Books ([Id], [Name], [Author], [Publisher],[Price]) VALUES");
 
             foreach (Book item in bookList)
             {
                 if (item == bookList.Last())
                 {
-                    sqlExpression += $"('{item.Id}','{item.Name}','{item.Author}','{item.Publisher}','{item.Price}');";
+                    insertSqlExpression.Append($"('{item.Id}','{item.Name}','{item.Author}','{item.Publisher}','{item.Price}');");
                 }
                 else
                 {
-                    sqlExpression += $"('{item.Id}','{item.Name}','{item.Author}','{item.Publisher}','{item.Price}'),";
+                    insertSqlExpression.Append($"('{item.Id}','{item.Name}','{item.Author}','{item.Publisher}','{item.Price}'),");
                 }
             }
+
+            string InsertSqlExpression = insertSqlExpression.ToString();
+            string DeleteSqlExpression = "DELETE FROM Books";
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
 
-                SqlCommand command = new SqlCommand("DELETE FROM Books", con);
+                SqlCommand command = new SqlCommand(DeleteSqlExpression, con);
                 try
                 {
                     con.Open();
@@ -72,7 +77,7 @@ namespace LibraryProject.Extention_Classes
                 {
                 }
 
-                command = new SqlCommand(sqlExpression, con);
+                command = new SqlCommand(InsertSqlExpression, con);
                 try
                 {
                     command.ExecuteNonQuery();
