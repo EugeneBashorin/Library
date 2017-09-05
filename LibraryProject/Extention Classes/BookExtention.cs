@@ -14,8 +14,7 @@ namespace LibraryProject.Extention_Classes
     {
         private static string writePath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/books.txt";
         private static string writeXmlPath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/books.xml";
-        //private static string connectionString = @"Data Source=DESKTOP-4IAPGK2;Initial Catalog=Library;Integrated Security=True";//@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=Library;Integrated Security=True";
-        private static string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+ 
         public static void GetTxtList(this List<Book> list)
         {
             StringBuilder result = new StringBuilder(130);
@@ -44,7 +43,7 @@ namespace LibraryProject.Extention_Classes
             }
         }
 
-        public static void SetBookListToDb(this List<Book> bookList)
+        public static void SetBookListToDb(this List<Book> bookList, string connectionString)
         {
             StringBuilder insertSqlExpression = new StringBuilder(300);
             insertSqlExpression.Append("INSERT INTO Books ([Id], [Name], [Author], [Publisher],[Price]) VALUES");

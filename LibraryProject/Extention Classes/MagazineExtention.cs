@@ -14,10 +14,7 @@ namespace LibraryProject.Extention_Classes
     {
         private static string writePath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/magazines.txt";
         private static string writeXmlPath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/magazines.xml";
-        //private static string connectionString = @"Data Source=DESKTOP-4IAPGK2;Initial Catalog=Library;Integrated Security=True";
-        //Server=.\SQLExpress;AttachDbFilename=|DataDirectory|mydbfile.mdf;Database=dbname;TIntegrated Security = True;
-        private static string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-
+ 
         public static void GetTxtList(this List<Magazine> list)
         {
             StringBuilder result = new StringBuilder(130);
@@ -46,7 +43,7 @@ namespace LibraryProject.Extention_Classes
             }
         }
 
-        public static void SetMagazineListToDb(this List<Magazine> magazineList)
+        public static void SetMagazineListToDb(this List<Magazine> magazineList, string connectionString)
         {
             StringBuilder insertSqlExpression = new StringBuilder(300);
             insertSqlExpression.Append("INSERT INTO Magazines ([Id], [Name], [Category], [Publisher],[Price]) VALUES");

@@ -1,6 +1,7 @@
 ﻿using LibraryProject.Extention_Classes;
 using LibraryProject.Models;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -12,6 +13,7 @@ namespace LibraryProject.Controllers
         private const string _MAGAZINE_KEY = "magazine";
         private const string _NEWSPAPER_KEY = "newspaper";
         private const int _AUTOINCREMENT = 1;
+        private string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
         List<Book> bookList;
         List<Magazine> magazineList;
@@ -21,6 +23,14 @@ namespace LibraryProject.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            string result = "You are not registered";
+            if (User.Identity.IsAuthenticated)
+            {
+                result = "Your login is: " + User.Identity.Name;
+            }
+
+            ViewBag.Result = result;
+
             if (Session["LibraryState"] == null)
             {
                 indexModel = new IndexModel();
@@ -277,7 +287,7 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
             List<Book> bookList = indexModel.Books;
-            bookList.SetBookListToDb();
+            bookList.SetBookListToDb(connectionString);
 
             return RedirectToAction("Index");
         }
@@ -287,7 +297,7 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
             List<Magazine> magazineList = indexModel.Magazines;
-            magazineList.SetMagazineListToDb();
+            magazineList.SetMagazineListToDb(connectionString);
 
             return RedirectToAction("Index");
         }
@@ -297,7 +307,7 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
             List<NewsPaper> newspaperList = indexModel.NewsPapers;
-            newspaperList.SetNewspaperListToDb();
+            newspaperList.SetNewspaperListToDb(connectionString);
 
             return RedirectToAction("Index");
         }

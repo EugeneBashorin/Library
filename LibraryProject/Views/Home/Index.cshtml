@@ -1,15 +1,12 @@
 ﻿@using LibraryProject.Models;
 @model IndexModel
-
 @{
     ViewBag.Title = "Library";
 }
-
+@ViewBag.Result;
 <h4>ListOfBooks</h4>
-@Html.Partial("BookPartial",Model.Books)
-
+@Html.Partial("BookPartial", Model.Books)
 <h4>ListOfMagazines</h4>
 @Html.Partial("MagazinePartial", Model.Magazines)
-
 <h4>ListOfNewsPaper</h4>
 @Html.Partial("NewsPaperPartial", Model.NewsPapers)
